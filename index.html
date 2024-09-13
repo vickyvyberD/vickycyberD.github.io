@@ -149,6 +149,7 @@
             $(".erf-sec a").removeClass("activeitem");
             $('body,html').animate({ scrollTop: $('#erfcntsec').position().top + 120 }, "slow");
             var page1 = $(this).data('erfsecitem');
+            console.log(page1);
             $("#erfcntsec .erfsecitem:not('.hide')").stop().fadeOut('fast', function () {
                 $(this).addClass('hide');
                 $('#erfcntsec .erfsecitem[data-erfsecitem="' + page1 + '"]').fadeIn('slow').removeClass('hide');
