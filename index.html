@@ -1,0 +1,479 @@
+<style>
+    .wrapper {
+        width: 100vw;
+        margin: 0 auto;
+        height: 400px;
+        background-color: #161616;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    @media screen and (max-width: 767px) {
+        .wrapper {
+            height: 700px;
+        }
+    }
+
+    .content {
+
+        width: 100%;
+
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media screen and (max-width: 767px) {
+        .content {
+            padding-top: 300px;
+            flex-direction: column;
+        }
+    }
+
+    .card {
+        width: 100%;
+
+
+        height: 250px;
+        background-color: #f0f0f0;
+        margin: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.24);
+        border: 2px solid rgba(7, 7, 7, 0.12);
+        font-size: 16px;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .icon {
+        margin: 0 auto;
+        width: 100%;
+        height: 80px;
+        max-width: 80px;
+        background: linear-gradient(90deg, #ffe400 40%, rgba(0, 0, 0, 0.28) 60%);
+        border-radius: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        transition: all 0.8s ease;
+        background-position: 0px;
+        background-size: 200px;
+    }
+
+    .material-icons.md-18 {
+        font-size: 18px;
+    }
+
+    .material-icons.md-24 {
+        font-size: 24px;
+    }
+
+    .material-icons.md-36 {
+        font-size: 36px;
+    }
+
+    .material-icons.md-48 {
+        font-size: 48px;
+    }
+
+    .card .title {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        margin-top: 30px;
+        color: black;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+    }
+
+    .card .text {
+        width: 80%;
+        margin: 0 auto;
+        font-size: 13px;
+        text-align: center;
+        margin-top: 20px;
+        color: black;
+        font-weight: 200;
+        letter-spacing: 2px;
+        opacity: 0;
+        max-height: 0;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        height: 270px;
+    }
+
+    .card:hover .info {
+        height: 90%;
+    }
+
+    .card:hover .text {
+        transition: all 0.3s ease;
+        opacity: 1;
+        max-height: 40px;
+    }
+
+    .card:hover .icon {
+        background-position: -120px;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover .icon i {
+        background: linear-gradient(90deg, #FF7E7E, #FF4848);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        opacity: 1;
+        transition: all 0.3s ease;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".erfsecitem").hide();
+        $("body").on("click", ".erf-sec a", function (e) {
+            e.preventDefault();
+            $(".erf-sec a").removeClass("activeitem");
+            $('body,html').animate({ scrollTop: $('#erfcntsec').position().top + 120 }, "slow");
+            var page1 = $(this).data('erfsecitem');
+            $("#erfcntsec .erfsecitem:not('.hide')").stop().fadeOut('fast', function () {
+                $(this).addClass('hide');
+                $('#erfcntsec .erfsecitem[data-erfsecitem="' + page1 + '"]').fadeIn('slow').removeClass('hide');
+            });
+            $(this).addClass("activeitem");
+        });
+        $("#backToTop").click(function () {
+            $('body,html').animate({ scrollTop: $('.erf-sec').position().top }, "slow");
+        });
+        $(".erfsecitem h4").click(function () {
+            $(this).parent().slideUp();
+            $(".erf-sec a").removeClass("activeitem");
+        });
+    });
+</script>
+<style>
+    .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #ffe400;
+    }
+
+    h3 {
+        color: #262626;
+        font-size: 17px;
+        line-height: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    p {
+        font-size: 17px;
+        font-weight: 400;
+        line-height: 20px;
+        color: #666666;
+
+        &.small {
+            font-size: 14px;
+        }
+    }
+
+    .go-corner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        overflow: hidden;
+        top: 0;
+        right: 0;
+        background-color: #ffe400;
+        border-radius: 0 4px 0 32px;
+    }
+
+    .go-arrow {
+        margin-top: -4px;
+        margin-right: -4px;
+        color: white;
+        font-family: courier, sans;
+    }
+
+    .card1 {
+        display: block;
+        position: relative;
+        width: 192px;
+        height: 162px;
+        background-color: #f2f8f9;
+        border-radius: 150px 0 150px 150px;
+        border-style: solid;
+        border-color: black;
+        padding: 32px 24px;
+        margin: 12px;
+        text-decoration: none;
+        z-index: 0;
+        overflow: hidden;
+
+        &:before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: -16px;
+            right: -16px;
+            background: #ffe400;
+            height: 32px;
+            width: 32px;
+            border-radius: 32px;
+            transform: scale(1);
+            transform-origin: 50% 50%;
+            transition: transform 0.25s ease-out;
+        }
+
+        &:hover:before {
+            transform: scale(29);
+        }
+    }
+
+    .card1:hover {
+        p {
+            transition: all 0.3s ease-out;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        h3 {
+            transition: all 0.3s ease-out;
+            color: black;
+        }
+
+        icon {
+            color: white;
+        }
+    }
+
+    .erfsecitem {
+        background: #f8f8f8;
+        margin-top: 15px;
+        padding: 10px;
+        margin-right: 29px;
+    }
+
+    .erfsecitem>.yellow-heading {
+        background: #ffe400;
+        color: #444444;
+        -ms-name: "Dark 1";
+        -ms-color: "Gray-80%";
+        padding: 10px;
+        margin-top: -10px;
+        margin-bottom: 14px;
+        margin-left: -10px;
+        margin-right: -10px;
+        position: relative;
+    }
+
+    .erfsecitem>.yellow-heading::before {
+        content: "\00D7";
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 2em;
+        line-height: 0.8em;
+        font-weight: 900;
+        position: absolute;
+        background: #e8e8e8;
+        padding: 6px 9px 7px;
+        right: 0;
+        top: 0;
+        cursor: pointer;
+    }
+
+    .erfsecitem .dark h5 {
+        background: #d0d0d0;
+    }
+
+    .erfsecitem .erf-cnt-sec-items {
+        background: #f8f8f8;
+        padding: 10px;
+    }
+</style>
+<div class="main">
+    <div class="container" class="erf-sec">
+        <a class="card1" href="#" data-erfsecitem="button1">
+            <h3 style="text-align:center">Consulting</h3>
+            <img src=""
+                style="width:150px;padding-left:20px">
+            <div class="go-corner" href="#">
+                <div class="go-arrow">
+                    →
+                </div>
+            </div>
+        </a>
+        <a class="card1" href="#" data-erfsecitem="button2">
+            <h3 style="text-align:center">Risk Consulting</h3>
+            <img src=""
+                style="width:150px;padding-left:20px">
+            <div class="go-corner" href="#">
+                <div class="go-arrow">
+                    →
+                </div>
+            </div>
+        </a>
+        <a class="card1" href="#" data-erfsecitem="button3">
+            <h3 style="text-align:center">Digital Risk Consulting</h3>
+            <img src=""
+                style="width:150px;padding-left:20px">
+            <div class="go-corner" href="#">
+                <div class="go-arrow">
+                    →
+                </div>
+            </div>
+        </a>
+    </div>
+    <div id="erfcntsec">
+        <div class="erfsecitem" id="button1" data-erfsecitem="button1">
+            <h4 class="yellow-heading">
+                <span class="ms-rteThemeForeColor-2-0">Box1</span>
+            </h4>
+            <div class="content">
+                <div class="learning_container">
+                <div class="learn-wrapper">
+                <!-- card -->
+                <div class="card">
+                    <div class="icon">
+                        <ion-icon name="graduate-outline"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"
+                                fill="black" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z">
+                                </path>
+                            </svg></ion-icon>
+                    </div>
+
+                    <p class="title">Consultant</p>
+                    <p class="text">Click to view</p>
+
+                </div>
+                <!-- end card -->
+                <!-- card -->
+                <div class="card">
+
+                    <div class="icon">
+                        <div class="icon">
+                            <ion-icon name="consultants-outline"><svg xmlns="http://www.w3.org/2000/svg" width="60"
+                                    height="60" fill="black" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1h-4zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2z">
+                                    </path>
+                                </svg></ion-icon>
+                        </div>
+                    </div>
+                    <p class="title">Senior</p>
+                    <p class="text">Click to view trainings</p>
+
+                </div>
+                <!-- end card -->
+                <!-- card -->
+                <div class="card">
+
+                    <div class="icon">
+                        <div class="icon">
+                            <ion-icon name="senior-outline"><svg xmlns="http://www.w3.org/2000/svg" width="60"
+                                    height="60" fill="black" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z">
+                                    </path>
+                                </svg></ion-icon>
+                        </div>
+                    </div>
+                    <p class="title">Manager</p>
+                    <p class="text">Click to view trainings</p>
+
+                </div>
+                <!-- end card -->
+                <div class="card">
+
+                    <div class="icon">
+                        <div class="icon">
+                            <ion-icon name="manager-outline"><svg xmlns="http://www.w3.org/2000/svg" width="60"
+                                    height="60" fill="black" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z">
+                                    </path>
+                                    <path
+                                        d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z">
+                                    </path>
+                                </svg></ion-icon>
+                        </div>
+                    </div>
+                    <p class="title">Senior Manager</p>
+                    <p class="text">Click to view trainings</p>
+
+                </div>
+                <div class="card">
+
+                    <div class="icon">
+                        <div class="icon">
+                            <ion-icon name="senior-outline"><svg xmlns="http://www.w3.org/2000/svg" width="60"
+                                    height="60" fill="black" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z">
+                                    </path>
+                                </svg></ion-icon>
+                        </div>
+                    </div>
+                    <p class="title">PPEDs</p>
+                    <p class="text">Click to view trainings</p>
+
+                </div>
+            </div>
+            <div class="wrapper-content erfsecitem">
+                <h4 class="yellow-heading">
+                    <span class="ms-rteThemeForeColor-2-0">Box2</span>
+                </h4>
+
+                <p> Eos dolor minus non esse nostrum quo dicta nulla eos alias optio. Vel facere veritatis eum saepe
+                    saepe ut aliquid doloribus et omnis natus hic consequatur ullam. Rem saepe quisquam et animi Quis
+                    cum eveniet enim sit repellendus facere et dolor nostrum eos dolores iste et esse laudantium. Id
+                    dolorem earum ea dolores laboriosam et tenetur perferendis et sint assumenda.</p>
+            </div>
+        </div>
+
+            </div>
+        </div>
+            <div class="erfsecitem" id="button2" data-erfsecitem="button2">
+                <h4 class="yellow-heading">
+                    <span class="ms-rteThemeForeColor-2-0">Box2</span>
+                </h4>
+
+                <p> Eos dolor minus non esse nostrum quo dicta nulla eos alias optio. Vel facere veritatis eum saepe
+                    saepe ut aliquid doloribus et omnis natus hic consequatur ullam. Rem saepe quisquam et animi Quis
+                    cum eveniet enim sit repellendus facere et dolor nostrum eos dolores iste et esse laudantium. Id
+                    dolorem earum ea dolores laboriosam et tenetur perferendis et sint assumenda.</p>
+            </div>
+        </div>
+            <div class="erfsecitem" id="button3" data-erfsecitem="button3">
+                <h4 class="yellow-heading">
+                    <span class="ms-rteThemeForeColor-2-0">Box3</span>
+                </h4>
+                <p>Lorem ipsum dolor sit amet. Est odit odio qui galisum internos ab voluptas nulla hic laudantium
+                    praesentium sed quibusdam eligendi? Ut dolores minus et nulla enim est tenetur dolorem ea
+                    praesentium distinctio sed dicta corrupti et earum vitae sit voluptate tempora. Sit maiores
+                    necessitatibus sed deleniti obcaecati non iste minus. </p>
+                <p> Eos dolor minus non esse nostrum quo dicta nulla eos alias optio. Vel facere veritatis eum saepe
+                    saepe ut aliquid doloribus et omnis natus hic consequatur ullam. Rem saepe quisquam et animi Quis
+                    cum eveniet enim sit repellendus facere et dolor nostrum eos dolores iste et esse laudantium. Id
+                    dolorem earum ea dolores laboriosam et tenetur perferendis et sint assumenda.</p>
+            </div>
+
+
+
+        </div>
