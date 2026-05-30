@@ -736,6 +736,69 @@
       60%       { clip-path: inset(70% 0 15% 0); transform: translate(-2px, 2px); }
       80%       { clip-path: inset(85% 0 5% 0);  transform: translate(2px, -2px); }
     }
+
+    /* ─── ZORO KATANA SLASH ──────────────────── */
+    #slash-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9990;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .slash {
+      position: absolute;
+      left: -25%;
+      width: 150%;
+      height: 1.5px;
+      transform-origin: left center;
+      transform: scaleX(0) rotate(-28deg);
+      opacity: 0;
+      /* sharp leading edge → glowing body → trailing fade */
+      background: linear-gradient(
+        90deg,
+        transparent         0%,
+        rgba(0,245,255,0.2) 8%,
+        rgba(0,245,255,0.9) 25%,
+        #ffffff             50%,
+        rgba(0,245,255,0.7) 75%,
+        rgba(0,245,255,0.1) 92%,
+        transparent         100%
+      );
+      filter: drop-shadow(0 0 5px #00f5ff)
+              drop-shadow(0 0 14px rgba(255,255,255,0.7));
+    }
+
+    /* stagger vertical positions — Santoryu spacing */
+    #sl1 { top: 37%; }
+    #sl2 { top: 50%; }
+    #sl3 { top: 63%; }
+
+    /* wide soft afterglow that lingers behind each slash */
+    .slash-glow {
+      position: absolute;
+      left: -25%;
+      width: 150%;
+      height: 10px;
+      transform-origin: left center;
+      transform: scaleX(0) rotate(-28deg);
+      border-radius: 5px;
+      opacity: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,245,255,0.08), transparent);
+      filter: blur(4px);
+    }
+
+    #sg1 { top: calc(37% - 4px); }
+    #sg2 { top: calc(50% - 4px); }
+    #sg3 { top: calc(63% - 4px); }
+
+    /* full-screen flash at peak of third slash */
+    #slash-flash {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.6);
+      opacity: 0;
+    }
   </style>
 </head>
 <body>
@@ -750,6 +813,17 @@
     <div class="loader-track">
       <div class="loader-fill" id="loader-fill"></div>
     </div>
+  </div>
+
+  <!-- ── ZORO SANTORYU SLASH OVERLAY ──────── -->
+  <div id="slash-overlay">
+    <div class="slash"      id="sl1"></div>
+    <div class="slash"      id="sl2"></div>
+    <div class="slash"      id="sl3"></div>
+    <div class="slash-glow" id="sg1"></div>
+    <div class="slash-glow" id="sg2"></div>
+    <div class="slash-glow" id="sg3"></div>
+    <div id="slash-flash"></div>
   </div>
 
   <!-- ── NAV ───────────────────────────────── -->
@@ -1134,25 +1208,50 @@
       ease: 'power2.inOut',
       onComplete() {
         gsap.to('#loader', {
-          opacity: 0, duration: 0.45,
+          opacity: 0, duration: 0.3,
           onComplete() {
             document.getElementById('loader').style.display = 'none';
 
-            /* Hero entrance */
-            const tl = gsap.timeline();
-            tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
-              .to('.hero-name',    { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.35')
-              .to('.hero-tagline', { opacity: 1,        duration: 0.5 }, '-=0.3')
-              .to('.hero-ctas',    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3')
-              .to('.scroll-hint',  { opacity: 1,        duration: 0.5 }, '-=0.2');
+            /* ── SANTORYU: three-blade katana reveal ── */
+            function heroIn() {
+              const tl = gsap.timeline();
+              tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
+                .to('.hero-name',    { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.35')
+                .to('.hero-tagline', { opacity: 1,        duration: 0.5 }, '-=0.3')
+                .to('.hero-ctas',    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3')
+                .to('.scroll-hint',  { opacity: 1,        duration: 0.5 }, '-=0.2');
 
-            /* Typewriter */
-            gsap.to('#tagline', {
-              duration: 3.5,
-              text: 'JavaScript/React specialist fusing AI-enabled workflows with UX rigor to ship experiences that perform and delight.',
-              ease: 'none',
-              delay: 0.9
-            });
+              gsap.to('#tagline', {
+                duration: 3.5,
+                text: 'JavaScript/React specialist fusing AI-enabled workflows with UX rigor to ship experiences that perform and delight.',
+                ease: 'none',
+                delay: 0.9
+              });
+            }
+
+            /* Show all glows instantly, then animate slashes */
+            gsap.set(['.slash', '.slash-glow'], { opacity: 1, scaleX: 0 });
+
+            const slash = gsap.timeline({ onComplete: heroIn });
+
+            /* FIRST BLADE */
+            slash
+              .to('#sl1', { scaleX: 1, duration: 0.1,  ease: 'power4.in' })
+              .to('#sg1', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
+              .to('#sl1', { opacity: 0, duration: 0.5,  ease: 'power2.out' }, '+=0.02')
+              /* SECOND BLADE — starts while first is still fading */
+              .to('#sl2', { scaleX: 1, duration: 0.1,  ease: 'power4.in' }, '-=0.42')
+              .to('#sg2', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
+              .to('#sl2', { opacity: 0, duration: 0.5,  ease: 'power2.out' }, '+=0.02')
+              /* THIRD BLADE */
+              .to('#sl3', { scaleX: 1, duration: 0.1,  ease: 'power4.in' }, '-=0.42')
+              .to('#sg3', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
+              /* peak flash on third hit */
+              .to('#slash-flash', { opacity: 1, duration: 0.05 }, '<+=0.06')
+              .to('#slash-flash', { opacity: 0, duration: 0.45, ease: 'power2.out' })
+              .to('#sl3',  { opacity: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
+              /* linger glows fade slowly like an afterimage */
+              .to('.slash-glow', { opacity: 0, duration: 0.9, ease: 'power1.out', stagger: 0.1 }, '-=0.5');
           }
         });
       }
