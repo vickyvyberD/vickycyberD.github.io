@@ -9,6 +9,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet" />
 
+  <!-- Intro gate: hero content is only hidden when the intro can actually run -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.classList.add('intro');
+      try {
+        if (sessionStorage.getItem('introSeen') === '1') root.dataset.intro = 'short';
+        sessionStorage.setItem('introSeen', '1');
+      } catch (e) {}
+      /* fail open: if a CDN script or earlier code broke, never leave a blank page */
+      document.addEventListener('DOMContentLoaded', function () {
+        if (!window.__introStarted) root.classList.remove('intro');
+      });
+    })();
+  </script>
+
   <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <!-- GSAP + plugins -->
@@ -75,7 +92,7 @@
       inset: 0;
       background: var(--bg);
       z-index: 10000;
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -90,19 +107,7 @@
       text-transform: uppercase;
     }
 
-    .loader-track {
-      width: 220px;
-      height: 2px;
-      background: rgba(0,245,255,0.08);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .loader-fill {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, var(--cyan), var(--purple));
-    }
+    .intro #loader { display: flex; }
 
     /* ─── NAV ────────────────────────────────── */
     nav {
@@ -189,8 +194,6 @@
       letter-spacing: 5px;
       text-transform: uppercase;
       margin-bottom: 24px;
-      opacity: 0;
-      transform: translateY(20px);
     }
 
     .hero-name {
@@ -199,8 +202,6 @@
       line-height: 0.95;
       letter-spacing: -3px;
       margin-bottom: 20px;
-      opacity: 0;
-      transform: translateY(30px);
     }
 
     .hero-name .word { display: inline-block; }
@@ -219,7 +220,6 @@
       line-height: 1.7;
       min-height: 3.4em;
       margin-bottom: 44px;
-      opacity: 0;
     }
 
     .hero-ctas {
@@ -227,8 +227,6 @@
       gap: 16px;
       justify-content: center;
       flex-wrap: wrap;
-      opacity: 0;
-      transform: translateY(20px);
     }
 
     .btn-primary {
@@ -278,7 +276,6 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      opacity: 0;
     }
 
     .scroll-hint span {
@@ -737,6 +734,13 @@
       80%       { clip-path: inset(85% 0 5% 0);  transform: translate(2px, -2px); }
     }
 
+    /* ─── INTRO HIDDEN STATES (only while intro runs) ─ */
+    .intro .hero-eyebrow,
+    .intro .hero-ctas    { opacity: 0; transform: translateY(20px); }
+    .intro .hero-name    { opacity: 0; transform: translateY(30px); }
+    .intro .hero-tagline,
+    .intro .scroll-hint  { opacity: 0; }
+
     /* ─── ZORO KATANA SLASH ──────────────────── */
     #slash-overlay {
       position: fixed;
@@ -796,7 +800,7 @@
     #slash-flash {
       position: absolute;
       inset: 0;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.22);
       opacity: 0;
     }
   </style>
@@ -810,9 +814,6 @@
   <!-- ── LOADER ─────────────────────────────── -->
   <div id="loader">
     <div class="loader-label">ORV</div>
-    <div class="loader-track">
-      <div class="loader-fill" id="loader-fill"></div>
-    </div>
   </div>
 
   <!-- ── ZORO SANTORYU SLASH OVERLAY ──────── -->
@@ -846,7 +847,7 @@
       <h1 class="hero-name">
         <span class="word">Ohm&nbsp;R&nbsp;</span><span class="word gradient-text">Vignesh</span>
       </h1>
-      <p class="hero-tagline" id="tagline"></p>
+      <p class="hero-tagline" id="tagline">JavaScript/React specialist fusing AI-enabled workflows with UX rigor to ship experiences that perform and delight.</p>
       <div class="hero-ctas">
         <a href="#experience" class="btn-primary">View Work</a>
         <a href="mailto:vigneshv166@gmail.com" class="btn-ghost">Let's Talk</a>
@@ -1201,61 +1202,68 @@
       })();
     })();
 
-    /* ── LOADER → HERO ───────────────────── */
-    gsap.to('#loader-fill', {
-      width: '100%',
-      duration: 1.1,
-      ease: 'power2.inOut',
-      onComplete() {
-        gsap.to('#loader', {
-          opacity: 0, duration: 0.3,
-          onComplete() {
-            document.getElementById('loader').style.display = 'none';
+    /* ── INTRO: brand beat → Santoryu slash → hero ──
+       One timeline so any input can jump to the end.
+       Hero rises during the slash tail instead of waiting for it. */
+    (function intro() {
+      const root    = document.documentElement;
+      const overlay = document.getElementById('slash-overlay');
+      const loader  = document.getElementById('loader');
+      const tagline = document.getElementById('tagline');
+      const taglineText = tagline.textContent.trim();
 
-            /* ── SANTORYU: three-blade katana reveal ── */
-            function heroIn() {
-              const tl = gsap.timeline();
-              tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
-                .to('.hero-name',    { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.35')
-                .to('.hero-tagline', { opacity: 1,        duration: 0.5 }, '-=0.3')
-                .to('.hero-ctas',    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.3')
-                .to('.scroll-hint',  { opacity: 1,        duration: 0.5 }, '-=0.2');
-
-              gsap.to('#tagline', {
-                duration: 3.5,
-                text: 'JavaScript/React specialist fusing AI-enabled workflows with UX rigor to ship experiences that perform and delight.',
-                ease: 'none',
-                delay: 0.9
-              });
-            }
-
-            /* Show all glows instantly, then animate slashes */
-            gsap.set(['.slash', '.slash-glow'], { opacity: 1, scaleX: 0 });
-
-            const slash = gsap.timeline({ onComplete: heroIn });
-
-            /* FIRST BLADE */
-            slash
-              .to('#sl1', { scaleX: 1, duration: 0.1,  ease: 'power4.in' })
-              .to('#sg1', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
-              .to('#sl1', { opacity: 0, duration: 0.5,  ease: 'power2.out' }, '+=0.02')
-              /* SECOND BLADE — starts while first is still fading */
-              .to('#sl2', { scaleX: 1, duration: 0.1,  ease: 'power4.in' }, '-=0.42')
-              .to('#sg2', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
-              .to('#sl2', { opacity: 0, duration: 0.5,  ease: 'power2.out' }, '+=0.02')
-              /* THIRD BLADE */
-              .to('#sl3', { scaleX: 1, duration: 0.1,  ease: 'power4.in' }, '-=0.42')
-              .to('#sg3', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
-              /* peak flash on third hit */
-              .to('#slash-flash', { opacity: 1, duration: 0.05 }, '<+=0.06')
-              .to('#slash-flash', { opacity: 0, duration: 0.45, ease: 'power2.out' })
-              .to('#sl3',  { opacity: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
-              /* linger glows fade slowly like an afterimage */
-              .to('.slash-glow', { opacity: 0, duration: 0.9, ease: 'power1.out', stagger: 0.1 }, '-=0.5');
-          }
-        });
+      if (!root.classList.contains('intro')) {   /* reduced motion */
+        loader.style.display = overlay.style.display = 'none';
+        return;
       }
-    });
+      window.__introStarted = true;
+      tagline.textContent = '';
+
+      const skipEvents = ['keydown', 'pointerdown', 'wheel', 'touchstart'];
+      const tl = gsap.timeline({ onComplete: finish });
+
+      function skip() { tl.progress(1); }
+      function finish() {
+        skipEvents.forEach(e => removeEventListener(e, skip));
+        overlay.style.display = 'none';
+        root.classList.remove('intro');
+      }
+      skipEvents.forEach(e => addEventListener(e, skip, { passive: true }));
+
+      tl.to(loader, { opacity: 0, duration: 0.25, delay: 0.15 })
+        .set(loader, { display: 'none' });
+
+      if (root.dataset.intro !== 'short') {       /* full slash once per session */
+        tl.set(['.slash', '.slash-glow'], { opacity: 1, scaleX: 0 })
+          /* FIRST BLADE */
+          .to('#sl1', { scaleX: 1, duration: 0.1,  ease: 'power4.in' })
+          .to('#sg1', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
+          .to('#sl1', { opacity: 0, duration: 0.35, ease: 'power2.out' }, '+=0.02')
+          /* SECOND BLADE — starts while first is still fading */
+          .to('#sl2', { scaleX: 1, duration: 0.1,  ease: 'power4.in' }, '-=0.28')
+          .to('#sg2', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
+          .to('#sl2', { opacity: 0, duration: 0.35, ease: 'power2.out' }, '+=0.02')
+          /* THIRD BLADE */
+          .to('#sl3', { scaleX: 1, duration: 0.1,  ease: 'power4.in' }, '-=0.28')
+          .to('#sg3', { scaleX: 1, duration: 0.12, ease: 'power4.in' }, '<')
+          .addLabel('cut', '<+=0.06')
+          /* soft single flash on third hit */
+          .to('#slash-flash', { opacity: 1, duration: 0.05 }, 'cut')
+          .to('#slash-flash', { opacity: 0, duration: 0.3, ease: 'power2.out' })
+          .to('#sl3',  { opacity: 0, duration: 0.4, ease: 'power2.out' }, 'cut+=0.05')
+          .to('.slash-glow', { opacity: 0, duration: 0.5, ease: 'power1.out', stagger: 0.06 }, 'cut+=0.1');
+      } else {
+        tl.addLabel('cut');
+      }
+
+      /* HERO — revealed by the cut, overlapping the afterglow */
+      tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 'cut')
+        .to('.hero-name',    { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 'cut+=0.08')
+        .to('.hero-tagline', { opacity: 1,       duration: 0.3 }, 'cut+=0.3')
+        .to(tagline,         { text: taglineText, duration: 1.4, ease: 'none' }, 'cut+=0.3')
+        .to('.hero-ctas',    { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 'cut+=0.35')
+        .to('.scroll-hint',  { opacity: 1,       duration: 0.4 }, 'cut+=0.6');
+    })();
 
     /* ── SCROLL ANIMATIONS ───────────────── */
 
